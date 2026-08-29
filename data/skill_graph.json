@@ -1,0 +1,24 @@
+{
+  "domain": "Coding & Data Science",
+  "skills": [
+    { "id": "python_basics", "name": "Python Fundamentals", "description": "Variables, data structures, loops, and control flow in Python" },
+    { "id": "python_advanced", "name": "Advanced Python & OOP", "description": "Classes, decorators, generators, and async Python" },
+    { "id": "sql_basics", "name": "SQL & Relational Databases", "description": "SELECT queries, JOINs, aggregations, and basic schema design" },
+    { "id": "data_analysis", "name": "Data Analysis & Pandas", "description": "Data wrangling, cleaning, and aggregation with Pandas and NumPy" },
+    { "id": "data_viz", "name": "Data Visualization", "description": "Plotting with Matplotlib, Seaborn, and interactive charts" },
+    { "id": "fastapi_backend", "name": "FastAPI & REST APIs", "description": "Building web APIs, Pydantic validation, and async endpoints" },
+    { "id": "machine_learning", "name": "Machine Learning Fundamentals", "description": "Supervised/unsupervised learning, scikit-learn, and model evaluation" },
+    { "id": "deep_learning", "name": "Deep Learning & PyTorch", "description": "Neural networks, PyTorch, backpropagation, and CNNs/Transformers" },
+    { "id": "llm_engineering", "name": "LLM & Prompt Engineering", "description": "RAG, embeddings, prompt design, and fine-tuning" }
+  ],
+  "prerequisites": [
+    { "skill_id": "python_advanced", "prerequisite_id": "python_basics" },
+    { "skill_id": "data_analysis", "prerequisite_id": "python_basics" },
+    { "skill_id": "data_viz", "prerequisite_id": "data_analysis" },
+    { "skill_id": "fastapi_backend", "prerequisite_id": "python_advanced" },
+    { "skill_id": "machine_learning", "prerequisite_id": "data_analysis" },
+    { "skill_id": "machine_learning", "prerequisite_id": "sql_basics" },
+    { "skill_id": "deep_learning", "prerequisite_id": "machine_learning" },
+    { "skill_id": "llm_engineering", "prerequisite_id": "deep_learning" }
+  ]
+}
