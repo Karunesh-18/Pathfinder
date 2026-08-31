@@ -7,9 +7,9 @@ scikit-learn>=1.5,<2.0      # tfidf_rank in services/retrieval-ranking
 psycopg2-binary>=2.9,<3.0   # Postgres/Supabase backends (all four stores)
 pydantic>=2.0,<3.0          # every service's *_schema.py models
 groq>=0.11,<2.0             # common/llm.py — real LLM backend for the reasoning agents (not Anthropic — see CLAUDE.md)
+fastapi>=0.139,<1.0         # backend/ — REST API wrapping the services for the React frontend
+uvicorn>=0.51,<1.0          # ASGI server for backend/main.py
 
 # --- not needed yet ---
 # pgvector                  # once embeddings replace/augment TF-IDF
 # sentence-transformers     # ditto
-# fastapi                   # once a real API sits in front of the services (nothing does yet)
-# uvicorn

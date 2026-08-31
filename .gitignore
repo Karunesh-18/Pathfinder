@@ -9,6 +9,8 @@ venv/
 #   python services/intake-profiling/test_harness.py
 stores/course-knowledge-base/course_kb.db
 stores/learner-profile-store/learner_profiles.db
+stores/path-store/path_store.db
+stores/skills-taxonomy-graph/taxonomy.db
 
 # node projects kept under reference/ for pattern study, not built here
 node_modules/
