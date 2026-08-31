@@ -27,9 +27,13 @@ _ROOT = _BACKEND_DIR.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+import os  # noqa: E402
+
 from common.console import fix_windows_console_encoding  # noqa: E402
+from common.env import load_env_file  # noqa: E402
 
 fix_windows_console_encoding()
+load_env_file()
 
 from fastapi import FastAPI, Request  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
@@ -47,12 +51,15 @@ app = FastAPI(
     version="0.1.0",
 )
 
+# ALLOWED_ORIGINS: comma-separated list of extra frontend origins to trust
+# (e.g. the deployed Vercel URL). Local dev origins are always included so
+# `npm run dev` keeps working without any env var set.
+_default_origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+_extra_origins = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "").split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=_default_origins + _extra_origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],

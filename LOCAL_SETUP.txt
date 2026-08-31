@@ -1,0 +1,86 @@
+PathFinder — Local Setup & Execution Instructions
+==================================================
+
+Prerequisites
+--------------
+- Python 3.11+
+- Node.js 18+ and npm
+- (Optional) A Supabase project — without it, everything falls back to local SQLite automatically.
+- (Optional) A Groq API key — without it, the AI agents fall back to rule-based stubs.
+
+1. Clone and enter the repo
+----------------------------
+    git clone https://github.com/Karunesh-18/Pathfinder.git
+    cd Pathfinder
+
+2. Configure environment variables
+------------------------------------
+Backend (repo root):
+    copy .env.example .env
+    (Windows PowerShell)  or  cp .env.example .env   (bash)
+
+Edit .env and fill in (both optional):
+    SUPABASE_DB_URL=postgresql://postgres:[password]@[project-ref].supabase.co:5432/postgres
+    GROQ_API_KEY=gsk_...
+
+Frontend:
+    cd frontend
+    copy .env.example .env
+    cd ..
+
+The frontend .env only needs:
+    VITE_API_BASE_URL=http://localhost:8000
+(this is already the default in .env.example — leave as-is for local dev)
+
+3. Install backend dependencies
+---------------------------------
+    pip install -r requirements.txt
+
+4. Seed the data stores (run once, from repo root)
+-----------------------------------------------------
+    python stores/course-knowledge-base/ingest.py
+    python stores/skills-taxonomy-graph/taxonomy_store.py
+
+These populate the Course & Skills Knowledge Base and the Skills Taxonomy
+Graph — either into your Supabase Postgres database (if SUPABASE_DB_URL is
+set) or into local SQLite files under stores/ (if not).
+
+5. Run the backend API
+-------------------------
+From the repo root:
+    uvicorn backend.main:app --reload --port 8000
+
+Verify it's up: open http://localhost:8000/docs in a browser (interactive
+Swagger UI for every endpoint).
+
+6. Install and run the frontend
+-----------------------------------
+In a second terminal:
+    cd frontend
+    npm install
+    npm run dev
+
+Open the URL Vite prints (default http://localhost:5173).
+
+7. (Optional) Run individual service test harnesses
+-------------------------------------------------------
+Each of the 7 built services can also be exercised standalone, without the
+API/frontend, from the repo root:
+    python services/retrieval-ranking/test_harness.py
+    python services/intake-profiling/test_harness.py
+    python services/skill-gap/test_harness.py
+    python services/path-construction/test_harness.py
+    python services/explainability-qa/test_harness.py
+    python services/progress-feedback/test_harness.py
+    python services/dashboard/test_harness.py
+
+Troubleshooting
+------------------
+- "Course knowledge base is not seeded yet" error -> re-run step 4.
+- Frontend requests fail / CORS errors -> confirm the backend is running on
+  port 8000 and frontend/.env's VITE_API_BASE_URL matches it.
+- To check which backend (Postgres vs SQLite) a store is actually using,
+  hit GET http://localhost:8000/ (or check the store's backend_name()
+  function) — see CLAUDE.md Convention #2.
+- Never commit .env or paste its contents anywhere — it's gitignored for
+  a reason.

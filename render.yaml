@@ -1,0 +1,21 @@
+# Render Blueprint for the PathFinder backend (FastAPI).
+# Deploy: Render dashboard -> New -> Blueprint -> point at this repo.
+# Root directory must stay the repo root (not backend/) because
+# backend/service_bridge.py imports services/ and stores/ via relative
+# sys.path insertion (see CLAUDE.md Convention #4).
+services:
+  - type: web
+    name: pathfinder-backend
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: SUPABASE_DB_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.9

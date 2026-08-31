@@ -1,0 +1,92 @@
+PathFinder — Deploying Backend (Render) + Frontend (Vercel)
+=============================================================
+
+This repo now has two deploy-config files already added:
+  - render.yaml        (repo root)   -> backend web service config
+  - frontend/vercel.json             -> frontend SPA + build config
+
+Do the steps in THIS order — the frontend needs the backend's URL, and the
+backend's CORS setting needs the frontend's URL.
+
+0. Push the new files to GitHub first
+----------------------------------------
+    git add render.yaml frontend/vercel.json backend/main.py LOCAL_SETUP.txt DEPLOYMENT_GUIDE.txt
+    git commit -m "Add Render/Vercel deploy configs and setup docs"
+    git push origin main
+
+Both Render and Vercel deploy by connecting to your GitHub repo
+(Karunesh-18/Pathfinder), so they need to see these files on GitHub.
+
+1. Deploy the backend to Render
+-----------------------------------
+1. Go to https://dashboard.render.com and sign in (GitHub login is easiest).
+2. Click New -> Blueprint.
+3. Connect / select the Karunesh-18/Pathfinder repo. Render will detect
+   render.yaml automatically and propose a "pathfinder-backend" web service.
+   (If you'd rather set it up manually via New -> Web Service instead of
+   Blueprint: Root Directory = blank/repo root, Runtime = Python 3,
+   Build Command = pip install -r requirements.txt,
+   Start Command = uvicorn backend.main:app --host 0.0.0.0 --port $PORT)
+4. Before/during creation, set these environment variables in the Render
+   dashboard (Environment tab) — do NOT commit these values anywhere:
+       SUPABASE_DB_URL   = your Supabase direct connection string
+                           (leave unset to fall back to SQLite — fine for a
+                           demo, but SQLite on Render's free plan doesn't
+                           persist across deploys/restarts)
+       GROQ_API_KEY      = your Groq key (leave unset to use the rule-based
+                           stub agents instead of live LLM calls)
+       ALLOWED_ORIGINS   = leave blank for now — you'll fill this in after
+                           step 2 once you have the Vercel URL
+5. Click Create Web Service / Apply Blueprint and wait for the build+deploy
+   to finish. Note the URL Render gives you, e.g.:
+       https://pathfinder-backend.onrender.com
+6. Sanity check: open https://pathfinder-backend.onrender.com/docs — you
+   should see the FastAPI Swagger UI.
+
+   Note: Render's free plan spins the service down after ~15 min idle; the
+   first request after that takes ~30-60s to wake it back up. Normal.
+
+7. Seed the production database (one-time, run from your own machine)
+   Only needed if you set SUPABASE_DB_URL above:
+       - In your local .env, temporarily set SUPABASE_DB_URL to the SAME
+         Supabase connection string you gave Render.
+       - Run:
+           python stores/course-knowledge-base/ingest.py
+           python stores/skills-taxonomy-graph/taxonomy_store.py
+       - These write directly to Supabase, so the deployed backend (which
+         reads from the same database) will now have real data.
+
+2. Deploy the frontend to Vercel
+-------------------------------------
+1. Go to https://vercel.com and sign in (GitHub login is easiest).
+2. Click Add New -> Project, then import Karunesh-18/Pathfinder.
+3. In the project's configuration screen, set:
+       Root Directory   = frontend
+       Framework Preset = Vite   (should auto-detect from vercel.json)
+4. Add an environment variable:
+       VITE_API_BASE_URL = https://pathfinder-backend.onrender.com
+   (use the exact URL Render gave you in step 1.5 — no trailing slash)
+5. Click Deploy. Note the resulting URL, e.g.:
+       https://pathfinder.vercel.app
+
+3. Close the loop: allow the Vercel origin on the backend
+--------------------------------------------------------------
+1. Back in the Render dashboard, open pathfinder-backend -> Environment.
+2. Set:
+       ALLOWED_ORIGINS = https://pathfinder.vercel.app
+   (comma-separate multiple origins if you also have a custom domain, e.g.
+   "https://pathfinder.vercel.app,https://app.yourdomain.com")
+3. Save — Render auto-redeploys the service when an env var changes.
+
+4. Verify end to end
+------------------------
+Open the Vercel URL in a browser, go through the onboarding flow, and
+confirm it successfully calls the Render backend (check the Network tab
+for 200s, no CORS errors). If you see a CORS error, double-check
+ALLOWED_ORIGINS exactly matches the Vercel URL's scheme+host (no path,
+no trailing slash).
+
+Redeploying later
+----------------------
+Both platforms auto-redeploy on every push to the main branch by default —
+no extra steps needed for future changes.
