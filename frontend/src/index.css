@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/* Class-based dark mode: ThemeToggle adds/removes `dark` on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Navy & Coral palette */
+  --color-navy: #1e3a8a;
+  --color-navy-light: #3151ab;
+  --color-navy-dark: #142a63;
+  --color-coral: #fb7185;
+  --color-coral-light: #fda4af;
+  --color-coral-dark: #e11d48;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+
+  /* Theme-aware surface tokens — redefined under .dark below */
+  --color-bg: #f8fafc;
+  --color-bg-raised: #ffffff;
+  --color-fg: #0f172a;
+  --color-fg-muted: #475569;
+  --color-border: #e2e8f0;
+}
+
+.dark {
+  --color-bg: #0f172a;
+  --color-bg-raised: #16213e;
+  --color-fg: #e2e8f0;
+  --color-fg-muted: #94a3b8;
+  --color-border: #253357;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+* {
+  scrollbar-width: thin;
+}

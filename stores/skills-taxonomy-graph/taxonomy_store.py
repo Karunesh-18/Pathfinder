@@ -123,7 +123,7 @@ def get_role_requirements(role: str) -> list[dict[str, Any]]:
     else:
         conn = sqlite3.connect(SQLITE_PATH)
         try:
-            conn.execute(SQLITE_SCHEMA)  # no-op if already applied; safe for a fresh file
+            conn.executescript(SQLITE_SCHEMA)  # no-op if already applied; safe for a fresh file
             rows = conn.execute(
                 "SELECT skill, required_level, weight FROM skill_requirements WHERE role = ? ORDER BY weight DESC",
                 (role,),
@@ -147,7 +147,7 @@ def get_dependencies(role: str) -> list[dict[str, str]]:
     else:
         conn = sqlite3.connect(SQLITE_PATH)
         try:
-            conn.execute(SQLITE_SCHEMA)
+            conn.executescript(SQLITE_SCHEMA)
             rows = conn.execute(
                 "SELECT skill, prerequisite FROM skill_dependencies WHERE role = ?", (role,)
             ).fetchall()
