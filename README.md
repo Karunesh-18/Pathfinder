@@ -1,0 +1,60 @@
+# PathFinder — Personalized Adaptive Learning Agent
+
+## What this is
+PathFinder is an adaptive learning agent that models the learner continuously through a **Digital Twin**, discovers domain resources, measures actual learning evidence (distinguishing completion from mastery), asks targeted clarifying questions when uncertain (capped at 2/session), and dynamically rebuilds the learning roadmap as evidence comes in.
+
+## Live Demo
+Deployed URL: https://pathfinder-learning-agent.vercel.app (or run locally below)
+
+## Local Setup
+
+### 1. Prerequisites
+- Python 3.10+
+- Node.js 18+
+
+### 2. Backend & AI Service Setup
+```bash
+cd backend
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On Linux/macOS:
+# source venv/bin/activate
+
+pip install -r requirements.txt
+pip install -r ../ai_service/requirements.txt
+
+cp .env.example .env
+uvicorn backend.main:app --reload --port 8000
+```
+Backend API interactive docs will be live at `http://localhost:8000/docs`.
+
+### 3. Frontend Setup
+```bash
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+Frontend web application will be live at `http://localhost:3000`.
+
+### 4. Running Unit & Integration Tests
+```bash
+# Run AI Service Unit Tests
+pytest ai_service/test_ai_service.py
+
+# Run Backend API Integration Tests
+pytest backend/test_backend.py
+```
+
+## Architecture
+- `backend/`: FastAPI application, SQLite/PostgreSQL ORM models, Pydantic schemas, REST endpoints.
+- `ai_service/`: Digital Twin logic, Skill Gap engine, 4-factor Hybrid Recommender, Prerequisite DAG Path Generator, Active Questioning, Replanning rules.
+- `frontend/`: React (Vite) single page application with glassmorphism dark theme, interactive DAG roadmap, Recharts skill completion vs mastery visualization, onboarding chat, and AI mentor.
+- `data/`: `skill_graph.json`, `resource_catalog.json`, and `required_skills_by_role.json` curated domain fixtures.
+- `docs/`: Master documentation and role architecture specifications.
+
+## Team
+- **Backend Engineer**: API, DB schema, auth, orchestration
+- **Frontend Engineer**: Onboarding chat, dashboard, roadmap, resource cards, mentor chat
+- **AI/ML Engineer**: Digital Twin, skill gap engine, hybrid recommender, path generator, evidence analysis, active questioning
