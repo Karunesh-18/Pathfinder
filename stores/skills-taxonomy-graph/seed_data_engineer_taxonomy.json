@@ -1,0 +1,33 @@
+{
+  "role": "Data Engineer",
+  "source_note": "Hand-curated from general domain knowledge, not sourced from O*NET/ESCO or educor (see README) — a stand-in until a real taxonomy import happens. Skill names match the vocabulary already used in seed_data_engineer.json so gap matching is exact-string, not fuzzy.",
+  "required_skills": [
+    {"skill": "SQL", "required_level": "advanced", "weight": 5},
+    {"skill": "Python", "required_level": "advanced", "weight": 5},
+    {"skill": "ETL", "required_level": "intermediate", "weight": 4},
+    {"skill": "Data Warehousing", "required_level": "intermediate", "weight": 4},
+    {"skill": "Apache Airflow", "required_level": "intermediate", "weight": 4},
+    {"skill": "Apache Spark", "required_level": "intermediate", "weight": 4},
+    {"skill": "Apache Kafka", "required_level": "beginner", "weight": 3},
+    {"skill": "NoSQL", "required_level": "beginner", "weight": 2},
+    {"skill": "Docker", "required_level": "beginner", "weight": 2},
+    {"skill": "Data Modeling", "required_level": "intermediate", "weight": 3},
+    {"skill": "Google Cloud Platform", "required_level": "intermediate", "weight": 3},
+    {"skill": "Analytics Engineering", "required_level": "beginner", "weight": 2}
+  ],
+  "dependencies": [
+    {"skill": "Apache Spark", "prerequisite": "Python"},
+    {"skill": "Apache Spark", "prerequisite": "SQL"},
+    {"skill": "Apache Airflow", "prerequisite": "Python"},
+    {"skill": "Apache Airflow", "prerequisite": "ETL"},
+    {"skill": "Apache Kafka", "prerequisite": "Python"},
+    {"skill": "ETL", "prerequisite": "SQL"},
+    {"skill": "ETL", "prerequisite": "Python"},
+    {"skill": "Data Warehousing", "prerequisite": "SQL"},
+    {"skill": "Data Modeling", "prerequisite": "SQL"},
+    {"skill": "Analytics Engineering", "prerequisite": "SQL"},
+    {"skill": "Analytics Engineering", "prerequisite": "Data Warehousing"},
+    {"skill": "Google Cloud Platform", "prerequisite": "SQL"},
+    {"skill": "NoSQL", "prerequisite": "SQL"}
+  ]
+}

@@ -1,0 +1,167 @@
+
+/* Content formatting styles */
+
+/* Content section containers */
+.content-section {
+  @apply max-w-none text-gray-800 leading-relaxed w-full;
+}
+
+/* Headings */
+.content-section h1, 
+.content-section h2, 
+.content-section h3, 
+.content-section h4 {
+  @apply font-bold text-brand-purple mb-4 mt-6 w-full;
+  line-height: 1.3;
+}
+
+.content-section h1 {
+  @apply text-4xl mt-8 border-b border-brand-purple/20 pb-2 w-full;
+  background: linear-gradient(90deg, #6D42EF, #E84393);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.content-section h2 {
+  @apply text-2xl mt-7 w-full;
+}
+
+.content-section h3 {
+  @apply text-xl mt-6 text-brand-purple/90 w-full;
+}
+
+.content-section h4 {
+  @apply text-lg mt-5 text-brand-purple/80 w-full;
+}
+
+/* Paragraph text */
+.content-section p {
+  @apply my-4 text-lg leading-relaxed w-full;
+}
+
+/* Lists */
+.content-section ul,
+.content-section ol {
+  @apply my-5 pl-6 space-y-2 w-full block;
+}
+
+.content-section ul {
+  @apply list-disc;
+}
+
+.content-section ol {
+  @apply list-decimal;
+}
+
+.content-section li {
+  @apply pl-2 text-lg leading-relaxed mb-2 w-full block;
+  display: list-item;
+}
+
+.content-section ul li::marker {
+  @apply text-brand-purple font-bold;
+}
+
+.content-section ol li::marker {
+  @apply text-brand-purple font-semibold;
+}
+
+/* Code blocks */
+.content-section pre {
+  @apply my-8 rounded-xl overflow-hidden border border-brand-purple/20 shadow-xl w-full;
+  max-width: 100%;
+  position: relative;
+  background: #1a1a1a;
+}
+
+.content-section pre::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(102, 84, 245, 0.05) 0%, rgba(202, 90, 139, 0.05) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.content-section pre code {
+  @apply block p-6 overflow-x-auto text-base w-full relative z-10;
+  background-color: transparent;
+  color: #e5e7eb;
+  max-width: 100%;
+  white-space: pre;
+  word-break: normal;
+  line-height: 1.7;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* Language tag for code blocks */
+.content-section pre::after {
+  content: attr(data-language);
+  position: absolute;
+  top: 0;
+  right: 0;
+  @apply px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white bg-brand-purple/90 rounded-tl-lg rounded-br-lg;
+  z-index: 20;
+}
+
+/* Inline code */
+.content-section p code,
+.content-section li code {
+  @apply px-2 py-1 rounded-md text-brand-pink text-sm font-medium;
+  background-color: rgba(102, 84, 245, 0.1);
+  border: 1px solid rgba(102, 84, 245, 0.2);
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* Blockquotes */
+.content-section blockquote {
+  @apply border-l-4 border-brand-purple bg-brand-purple/5 pl-5 py-2 my-5 italic rounded-r-lg w-full;
+}
+
+/* Links */
+.content-section a {
+  @apply text-brand-purple hover:text-brand-pink underline transition-colors;
+}
+
+/* Images */
+.content-section img {
+  @apply rounded-lg border border-gray-200 shadow-sm my-4 max-w-full mx-auto;
+}
+
+/* Horizontal rules */
+.content-section hr {
+  @apply my-8 border-0 h-0.5 rounded-full w-full;
+  background: linear-gradient(90deg, transparent, #6D42EF, transparent);
+}
+
+/* Tables */
+.content-section table {
+  @apply w-full border-collapse my-6 rounded-lg overflow-hidden shadow-sm;
+  table-layout: fixed;
+}
+
+.content-section thead {
+  @apply bg-brand-purple/10;
+}
+
+.content-section th {
+  @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-brand-purple;
+}
+
+.content-section td {
+  @apply px-4 py-3 text-sm border-t border-gray-100;
+  word-wrap: break-word;
+}
+
+.content-section tbody tr:nth-child(even) {
+  @apply bg-black/[0.02];
+}
+
+/* Text gradient styling */
+.text-gradient-purple {
+  background: linear-gradient(90deg, #6D42EF, #E84393);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

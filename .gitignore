@@ -1,0 +1,19 @@
+__pycache__/
+**/__pycache__/
+*.pyc
+.venv/
+venv/
+
+# regenerable prototype output — recreate with:
+#   python stores/course-knowledge-base/ingest.py
+#   python services/intake-profiling/test_harness.py
+stores/course-knowledge-base/course_kb.db
+stores/learner-profile-store/learner_profiles.db
+
+# node projects kept under reference/ for pattern study, not built here
+node_modules/
+dist/
+build/
+
+.env
+.env.local

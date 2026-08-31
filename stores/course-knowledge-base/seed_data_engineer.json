@@ -1,0 +1,150 @@
+{
+  "target_role": "Data Engineer",
+  "source_note": "Hand-built sample set — real, currently-existing course titles and providers, written from general knowledge (not scraped or fetched live). Fallback for the missing Coursera/Udemy MCP connectors, per user instruction. Treat as representative, not verbatim listings. estimated_hours is a rough hand estimate for path-fitting purposes, not a scraped/official figure.",
+  "courses": [
+    {
+      "id": "coursera-ibm-data-engineering-cert",
+      "title": "IBM Data Engineering Professional Certificate",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/professional-certificates/ibm-data-engineer",
+      "description": "A multi-course program covering Python, SQL, relational and NoSQL databases, data warehousing, ETL pipelines, Apache Airflow, Apache Kafka, and Spark, aimed at learners with no prior data engineering background.",
+      "skills_taught": ["SQL", "Python", "ETL", "Data Warehousing", "Apache Airflow", "Apache Kafka", "Apache Spark", "Relational Databases", "NoSQL"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": [],
+      "estimated_hours": 100
+    },
+    {
+      "id": "coursera-google-data-engineering-cert",
+      "title": "Google Cloud Data Engineering Professional Certificate",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/professional-certificates/gcp-data-engineering",
+      "description": "Prepares learners to design and build data processing systems on Google Cloud, covering BigQuery, Dataflow, Pub/Sub, data pipeline orchestration, and machine learning pipeline integration.",
+      "skills_taught": ["Google Cloud Platform", "BigQuery", "Dataflow", "Pub/Sub", "Data Pipelines", "SQL", "Data Modeling"],
+      "level": "intermediate",
+      "format": "self-paced",
+      "prerequisites": ["SQL", "Python"],
+      "estimated_hours": 70
+    },
+    {
+      "id": "coursera-uw-data-engineering-spec",
+      "title": "Data Engineering, Big Data, and Machine Learning on GCP Specialization",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/specializations/gcp-data-machine-learning",
+      "description": "Covers building data pipelines and analytical solutions with GCP tools, including Dataproc, BigQuery, and Dataflow, with a focus on scaling data processing for machine learning workloads.",
+      "skills_taught": ["Google Cloud Platform", "BigQuery", "Dataproc", "Dataflow", "Big Data", "Machine Learning Pipelines"],
+      "level": "intermediate",
+      "format": "self-paced",
+      "prerequisites": ["SQL", "Python", "Basic Statistics"],
+      "estimated_hours": 50
+    },
+    {
+      "id": "udemy-complete-sql-bootcamp",
+      "title": "The Complete SQL Bootcamp",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/the-complete-sql-bootcamp/",
+      "description": "Hands-on SQL course using PostgreSQL, covering queries, joins, aggregations, subqueries, and window functions, aimed at beginners with no SQL background.",
+      "skills_taught": ["SQL", "PostgreSQL", "Data Querying", "Window Functions"],
+      "level": "beginner",
+      "format": "video",
+      "prerequisites": [],
+      "estimated_hours": 10
+    },
+    {
+      "id": "udemy-apache-spark-databricks",
+      "title": "Apache Spark with Scala/Python - Hands On with Big Data",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/apache-spark-with-scala-hands-on-with-big-data/",
+      "description": "Teaches distributed data processing with Apache Spark, covering RDDs, DataFrames, Spark SQL, and running Spark jobs at scale on real datasets.",
+      "skills_taught": ["Apache Spark", "Distributed Computing", "Spark SQL", "Big Data Processing"],
+      "level": "intermediate",
+      "format": "video",
+      "prerequisites": ["Python", "SQL"],
+      "estimated_hours": 12
+    },
+    {
+      "id": "udemy-airflow-de-bootcamp",
+      "title": "Apache Airflow: The Hands-On Guide",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/the-complete-hands-on-course-to-master-apache-airflow/",
+      "description": "Covers building, scheduling, and monitoring data pipelines with Apache Airflow, including DAG design, operators, sensors, and best practices for production workflows.",
+      "skills_taught": ["Apache Airflow", "Workflow Orchestration", "ETL", "Python"],
+      "level": "intermediate",
+      "format": "video",
+      "prerequisites": ["Python", "ETL basics"],
+      "estimated_hours": 7
+    },
+    {
+      "id": "udemy-kafka-for-developers",
+      "title": "Apache Kafka Series - Learn Apache Kafka for Beginners",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/apache-kafka/",
+      "description": "Introduces event streaming with Apache Kafka: producers, consumers, topics, partitions, and building real-time data pipelines.",
+      "skills_taught": ["Apache Kafka", "Event Streaming", "Real-Time Data Pipelines"],
+      "level": "beginner",
+      "format": "video",
+      "prerequisites": ["Basic programming"],
+      "estimated_hours": 11
+    },
+    {
+      "id": "coursera-python-for-everybody",
+      "title": "Python for Everybody Specialization",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/specializations/python",
+      "description": "An introductory sequence covering Python fundamentals, data structures, web scraping, databases, and basic data visualization, built for complete beginners.",
+      "skills_taught": ["Python", "Data Structures", "SQLite", "Web Scraping"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": [],
+      "estimated_hours": 60
+    },
+    {
+      "id": "udemy-docker-kubernetes-de",
+      "title": "Docker and Kubernetes: The Complete Guide",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/",
+      "description": "Covers containerizing applications with Docker and orchestrating them with Kubernetes, relevant to deploying and scaling data pipeline infrastructure.",
+      "skills_taught": ["Docker", "Kubernetes", "Containerization", "Infrastructure"],
+      "level": "intermediate",
+      "format": "video",
+      "prerequisites": ["Command line basics"],
+      "estimated_hours": 20
+    },
+    {
+      "id": "coursera-data-warehousing-bi",
+      "title": "Data Warehousing for Business Intelligence Specialization",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/specializations/data-warehousing",
+      "description": "Covers dimensional modeling, star and snowflake schemas, ETL design, and OLAP concepts for building analytical data warehouses.",
+      "skills_taught": ["Data Warehousing", "Dimensional Modeling", "ETL", "OLAP", "SQL"],
+      "level": "intermediate",
+      "format": "self-paced",
+      "prerequisites": ["SQL"],
+      "estimated_hours": 40
+    },
+    {
+      "id": "udemy-dbt-analytics-engineering",
+      "title": "Analytics Engineering with dbt",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/dbt-fundamentals/",
+      "description": "Teaches building modular, tested, and documented data transformation pipelines using dbt (data build tool) on top of a cloud data warehouse.",
+      "skills_taught": ["dbt", "Analytics Engineering", "SQL", "Data Transformation", "Data Testing"],
+      "level": "intermediate",
+      "format": "video",
+      "prerequisites": ["SQL", "Data Warehousing basics"],
+      "estimated_hours": 6
+    },
+    {
+      "id": "coursera-nosql-mongodb",
+      "title": "NoSQL Database Systems Concepts and Design with MongoDB",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/learn/nosql-databases",
+      "description": "Covers document-oriented database design and querying with MongoDB, including schema design trade-offs between relational and NoSQL systems.",
+      "skills_taught": ["NoSQL", "MongoDB", "Database Design", "Document Databases"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": ["Basic database concepts"],
+      "estimated_hours": 15
+    }
+  ]
+}

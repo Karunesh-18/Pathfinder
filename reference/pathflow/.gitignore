@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# Env files
+.env
+.env.local
+.env.production
+server/.env
+client/.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+client/build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
