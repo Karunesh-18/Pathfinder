@@ -21,6 +21,12 @@ if str(_CKB_PATH) not in sys.path:
 
 import db as course_kb_db  # noqa: E402
 
+_TAXONOMY_PATH = Path(__file__).resolve().parents[2] / "stores" / "skills-taxonomy-graph"
+if str(_TAXONOMY_PATH) not in sys.path:
+    sys.path.insert(0, str(_TAXONOMY_PATH))
+
+import taxonomy_store  # noqa: E402
+
 
 def lookup_skills_for_role(role: str) -> list[str]:
     """Return the flat set of skills tagged against `role` in the Course &
@@ -32,3 +38,23 @@ def lookup_skills_for_role(role: str) -> list[str]:
         if any(r.lower() == role.lower() for r in target_roles):
             skills.update(c.get("skills_taught", []) or [])
     return sorted(skills)
+
+
+def lookup_skills_for_all_roles() -> list[str]:
+    """Union of skills_taught across every course, regardless of role.
+    Used by intake_agent's extraction step now that multiple roles are
+    seeded — safe to widen, since extraction only ever reports a skill
+    that's literally present in the learner's text or in this allowed
+    list, so a bigger vocabulary can recognize more, never hallucinate."""
+    courses = course_kb_db.list_courses()
+    skills: set[str] = set()
+    for c in courses:
+        skills.update(c.get("skills_taught", []) or [])
+    return sorted(skills)
+
+
+def known_roles() -> list[str]:
+    """Every target role currently seeded in the Skills Taxonomy Graph —
+    used by intake_agent to validate/normalize a learner's extracted
+    target_role against a real, seeded role."""
+    return [r["role"] for r in taxonomy_store.list_roles()]

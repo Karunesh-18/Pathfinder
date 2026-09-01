@@ -32,17 +32,20 @@ from common.llm import is_llm_configured  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from extract import extract, extract_llm  # noqa: E402
 from profile_schema import LearnerProfile  # noqa: E402
-from taxonomy_lookup import lookup_skills_for_role  # noqa: E402
+from taxonomy_lookup import known_roles, lookup_skills_for_all_roles  # noqa: E402
 
 _LPS_PATH = Path(__file__).resolve().parents[2] / "stores" / "learner-profile-store"
 if str(_LPS_PATH) not in sys.path:
     sys.path.insert(0, str(_LPS_PATH))
 import profile_store as profile_db  # noqa: E402
 
-# Only role currently seeded in the Course & Skills Knowledge Base (see
-# stores/course-knowledge-base/seed_data_engineer.json). Once more roles
-# are ingested, this should come from the learner's own stated target
-# role instead of a fixed default.
+# Fallback role when a learner's free-text target role can't be matched
+# against a seeded role (see _normalize_target_role below). No longer the
+# *only* seeded role now that multiple roles exist in the Course & Skills
+# Knowledge Base / Skills Taxonomy Graph — it's just the safest default
+# when extraction is ambiguous. The Explore Roles and Settings pages are
+# the authoritative way a learner sets/corrects their target role;
+# free-text chat extraction is intentionally the weak link here.
 DEFAULT_ROLE_FOR_TAXONOMY = "Data Engineer"
 
 REQUIRED_FIELDS = ["target_role", "current_skills", "time_budget_hours_per_week", "format_preference"]
@@ -55,8 +58,22 @@ FOLLOW_UP_QUESTIONS = {
 }
 
 
+def _normalize_target_role(extracted_role: str | None) -> str | None:
+    """Match extracted_role against a seeded role case-insensitively.
+    Free-text extraction like "data science professional" won't reliably
+    equal "Data Scientist", so an unmatched guess is treated as unset
+    (flagged in missing_fields) rather than silently trusted — the
+    Explore Roles/Settings pages are the authoritative way to set it."""
+    if not extracted_role:
+        return None
+    for role in known_roles():
+        if role.lower() == extracted_role.lower():
+            return role
+    return None
+
+
 def profile_from_text(raw_text: str, learner_id: str | None = None) -> LearnerProfile:
-    known_skills = lookup_skills_for_role(DEFAULT_ROLE_FOR_TAXONOMY)
+    known_skills = lookup_skills_for_all_roles()
 
     if is_llm_configured():
         try:
@@ -66,6 +83,8 @@ def profile_from_text(raw_text: str, learner_id: str | None = None) -> LearnerPr
             extracted = extract(raw_text, known_skills)
     else:
         extracted = extract(raw_text, known_skills)
+
+    extracted["target_role"] = _normalize_target_role(extracted.get("target_role"))
 
     missing: list[str] = []
     if not extracted.get("target_role"):

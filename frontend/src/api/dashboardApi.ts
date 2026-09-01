@@ -1,27 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { apiClient } from './client'
-import type { Course, Dashboard } from './types'
+import type { Dashboard, SystemStatus } from './types'
 
-export function getDashboard(learnerId: string) {
-  return apiClient.get<Dashboard>(`/api/dashboard/${learnerId}`)
+export function getDashboard(learnerId: string, targetRole?: string) {
+  const qs = targetRole ? `?target_role=${encodeURIComponent(targetRole)}` : ''
+  return apiClient.get<Dashboard>(`/api/dashboard/${learnerId}${qs}`)
 }
 
-export function getCourses() {
-  return apiClient.get<{ courses: Course[] }>('/api/courses')
+export function getSystemStatus() {
+  return apiClient.get<SystemStatus>('/api/system/status')
 }
 
-export function useDashboard(learnerId: string | null) {
+export function useDashboard(learnerId: string | null, targetRole?: string) {
   return useQuery({
-    queryKey: ['dashboard', learnerId],
-    queryFn: () => getDashboard(learnerId as string),
+    queryKey: ['dashboard', learnerId, targetRole],
+    queryFn: () => getDashboard(learnerId as string, targetRole),
     enabled: !!learnerId,
-  })
-}
-
-export function useCourses() {
-  return useQuery({
-    queryKey: ['courses'],
-    queryFn: getCourses,
   })
 }

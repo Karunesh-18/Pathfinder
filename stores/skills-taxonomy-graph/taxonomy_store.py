@@ -52,14 +52,35 @@ def _pg_connect(db_url: str):
     return psycopg2.connect(db_url)
 
 
-def _load_seed() -> dict[str, Any]:
-    return json.loads(SEED_PATH.read_text(encoding="utf-8"))
+# Every taxonomy seed file, in the order ingest_all() loads them. New
+# roles added for the multi-role rework go here — see
+# stores/course-knowledge-base/ingest.py's ROLE_SEEDS for the matching
+# course-side list.
+SEED_FILES = [
+    HERE / "seed_data_engineer_taxonomy.json",
+    HERE / "seed_data_scientist_taxonomy.json",
+    HERE / "seed_ml_engineer_taxonomy.json",
+    HERE / "seed_frontend_developer_taxonomy.json",
+]
+
+# Short blurb shown on the Explore Roles page. A role present in the DB
+# with no entry here just gets an empty blurb, not an error.
+ROLE_BLURBS: dict[str, str] = {
+    "Data Engineer": "Build and operate the pipelines, warehouses, and infrastructure that move and shape data at scale.",
+    "Data Scientist": "Turn data into insight and predictions using statistics, machine learning, and experimentation.",
+    "ML Engineer": "Take machine learning models from notebook to production: training pipelines, serving, and monitoring.",
+    "Frontend Developer": "Build the user-facing interfaces of web applications with modern JavaScript frameworks and tooling.",
+}
 
 
-def ingest() -> tuple[int, int]:
-    """Load seed_data_engineer_taxonomy.json into whichever backend is
-    configured. Returns (n_requirements, n_dependencies)."""
-    seed = _load_seed()
+def _load_seed(seed_path: Path) -> dict[str, Any]:
+    return json.loads(seed_path.read_text(encoding="utf-8"))
+
+
+def ingest(seed_path: Path = SEED_PATH) -> tuple[int, int]:
+    """Load one taxonomy seed file into whichever backend is configured.
+    Returns (n_requirements, n_dependencies)."""
+    seed = _load_seed(seed_path)
     role = seed["role"]
     requirements = seed["required_skills"]
     dependencies = seed["dependencies"]
@@ -156,6 +177,79 @@ def get_dependencies(role: str) -> list[dict[str, str]]:
             conn.close()
 
 
+def ingest_all(seed_paths: list[Path] = SEED_FILES) -> list[tuple[str, int, int]]:
+    """Loads every taxonomy seed file that exists on disk (silently skips
+    ones that haven't been authored yet, so new roles can be added one at a
+    time). Returns [(role, n_requirements, n_dependencies), ...]."""
+    results = []
+    for seed_path in seed_paths:
+        if not seed_path.exists():
+            continue
+        role = json.loads(seed_path.read_text(encoding="utf-8"))["role"]
+        n_req, n_dep = ingest(seed_path)
+        results.append((role, n_req, n_dep))
+    return results
+
+
+def list_roles() -> list[dict[str, Any]]:
+    """[{"role", "blurb"}] for every role currently seeded, for the
+    Explore Roles page."""
+    db_url = get_database_url()
+    if db_url:
+        conn = _pg_connect(db_url)
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT DISTINCT role FROM skill_requirements ORDER BY role")
+                roles = [r[0] for r in cur.fetchall()]
+        finally:
+            conn.close()
+    else:
+        conn = sqlite3.connect(SQLITE_PATH)
+        try:
+            conn.executescript(SQLITE_SCHEMA)
+            roles = [r[0] for r in conn.execute("SELECT DISTINCT role FROM skill_requirements ORDER BY role")]
+        finally:
+            conn.close()
+    return [{"role": role, "blurb": ROLE_BLURBS.get(role, "")} for role in roles]
+
+
+def compute_skill_tiers(role: str) -> dict[str, int]:
+    """Longest-path-from-a-root tiering over the role's skill dependency
+    graph (Kahn's algorithm), so the Course Tree page can lay itself out in
+    columns without a client-side graph-layout library. A skill with no
+    prerequisites is tier 0; a skill depending on it is tier 1, etc."""
+    requirements = get_role_requirements(role)
+    dependencies = get_dependencies(role)
+
+    all_skills = {r["skill"] for r in requirements}
+    prereqs_of: dict[str, set[str]] = {skill: set() for skill in all_skills}
+    dependents_of: dict[str, set[str]] = {skill: set() for skill in all_skills}
+    for dep in dependencies:
+        skill, prerequisite = dep["skill"], dep["prerequisite"]
+        all_skills.add(skill)
+        all_skills.add(prerequisite)
+        prereqs_of.setdefault(skill, set()).add(prerequisite)
+        dependents_of.setdefault(prerequisite, set()).add(skill)
+        prereqs_of.setdefault(prerequisite, set())
+        dependents_of.setdefault(skill, set())
+
+    tiers = {skill: 0 for skill in all_skills}
+    remaining_prereqs = {skill: set(prereqs) for skill, prereqs in prereqs_of.items()}
+    ready = [skill for skill, prereqs in remaining_prereqs.items() if not prereqs]
+    visited = set()
+    while ready:
+        skill = ready.pop()
+        if skill in visited:
+            continue
+        visited.add(skill)
+        for dependent in dependents_of.get(skill, ()):
+            tiers[dependent] = max(tiers[dependent], tiers[skill] + 1)
+            remaining_prereqs[dependent].discard(skill)
+            if not remaining_prereqs[dependent] and dependent not in visited:
+                ready.append(dependent)
+    return tiers
+
+
 if __name__ == "__main__":
-    n_req, n_dep = ingest()
-    print(f"Ingested {n_req} skill requirements and {n_dep} dependency edges (backend: {backend_name()})")
+    for role, n_req, n_dep in ingest_all():
+        print(f"Ingested {role}: {n_req} skill requirements and {n_dep} dependency edges (backend: {backend_name()})")

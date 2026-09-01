@@ -8,14 +8,17 @@ import type { ChatMessage } from '../components/chat/ChatWindow'
 import { ChatWindow } from '../components/chat/ChatWindow'
 import { FollowUpQuestionChips } from '../components/chat/FollowUpQuestionChips'
 import { errorMessage } from '../components/common/ErrorBanner'
-import { useLearnerSession } from '../context/LearnerSessionContext'
+import { useAuth } from '../context/AuthContext'
 
 const GREETING =
-  "Hi! I'm PathFinder. Tell me what you're trying to become and I'll build you a personalized learning roadmap. " +
-  'For example: "I want to become a data engineer, I already know some Python and SQL, I can study about 5 hours a week, and I prefer video courses."'
+  "Hi! I'm PathFinder. Tell me what role or career you're aiming for, what interests you about it, the skills " +
+  "you already have, how many hours a week you can study, and whether you prefer video, self-paced, or " +
+  'live/cohort-based courses. For example: "I want to become a data scientist — I love working with numbers and ' +
+  'finding patterns in messy data. I already know some Python and SQL, I can study about 6 hours a week, and I ' +
+  'prefer self-paced material."'
 
 export function OnboardingChatPage() {
-  const { learnerId, setLearnerId } = useLearnerSession()
+  const { learnerId } = useAuth()
   const navigate = useNavigate()
   const [messages, setMessages] = useState<ChatMessage[]>([{ role: 'assistant', text: GREETING }])
   const [transcript, setTranscript] = useState('')
@@ -30,49 +33,48 @@ export function OnboardingChatPage() {
     setError(null)
     const nextTranscript = transcript ? `${transcript}\n${text}` : text
 
-    createOrUpdateProfile.mutate(
-      { rawText: nextTranscript, learnerId },
-      {
-        onSuccess: (p) => {
-          setTranscript(nextTranscript)
-          setProfile(p)
-          if (!learnerId) setLearnerId(p.learner_id)
+    createOrUpdateProfile.mutate(nextTranscript, {
+      onSuccess: (p) => {
+        setTranscript(nextTranscript)
+        setProfile(p)
 
-          if (p.missing_fields.length > 0) {
-            setMessages((prev) => [
-              ...prev,
-              { role: 'assistant', text: 'Thanks — a couple more things would help:' },
-            ])
-          } else {
-            setMessages((prev) => [
-              ...prev,
-              {
-                role: 'assistant',
-                text: "Great, I have everything I need. Click \"Build my roadmap\" below when you're ready.",
-              },
-            ])
-          }
-        },
+        if (p.missing_fields.length > 0) {
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', text: 'Thanks — a couple more things would help:' },
+          ])
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              text: "Great, I have everything I need. Click \"Build my roadmap\" below when you're ready.",
+            },
+          ])
+        }
+      },
+      onError: (err) => setError(errorMessage(err)),
+    })
+  }
+
+  function handleBuildPath() {
+    if (!learnerId || !profile?.target_role) return
+    buildPath.mutate(
+      { learnerId, targetRole: profile.target_role },
+      {
+        onSuccess: () => navigate('/roadmap'),
         onError: (err) => setError(errorMessage(err)),
       },
     )
   }
 
-  function handleBuildPath() {
-    if (!learnerId) return
-    buildPath.mutate(learnerId, {
-      onSuccess: () => navigate('/roadmap'),
-      onError: (err) => setError(errorMessage(err)),
-    })
-  }
-
-  const ready = profile !== null && profile.missing_fields.length === 0
+  const ready = profile !== null && profile.missing_fields.length === 0 && !!profile.target_role
 
   return (
     <div className="mx-auto max-w-2xl">
       <h1 className="mb-1 text-2xl font-semibold">Let's find your path</h1>
       <p className="mb-5 text-sm text-fg-muted">
-        Describe your goals in natural language — I'll turn it into a structured plan.
+        Describe your goals and interests in natural language — I'll turn it into a structured plan.
       </p>
 
       <ChatWindow

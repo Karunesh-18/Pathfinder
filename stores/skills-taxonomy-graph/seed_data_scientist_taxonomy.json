@@ -1,0 +1,26 @@
+{
+  "role": "Data Scientist",
+  "source_note": "Hand-curated from general domain knowledge, not sourced from O*NET/ESCO or educor (see README) — a stand-in until a real taxonomy import happens. Skill names match the vocabulary already used in seed_data_scientist.json so gap matching is exact-string, not fuzzy. Added for the multi-role rework alongside seed_ml_engineer_taxonomy.json and seed_frontend_developer_taxonomy.json.",
+  "required_skills": [
+    {"skill": "Python", "required_level": "advanced", "weight": 5},
+    {"skill": "SQL", "required_level": "advanced", "weight": 5},
+    {"skill": "Statistics", "required_level": "advanced", "weight": 5},
+    {"skill": "Machine Learning", "required_level": "advanced", "weight": 5},
+    {"skill": "Pandas", "required_level": "intermediate", "weight": 4},
+    {"skill": "NumPy", "required_level": "intermediate", "weight": 3},
+    {"skill": "Data Visualization", "required_level": "intermediate", "weight": 3},
+    {"skill": "scikit-learn", "required_level": "intermediate", "weight": 3},
+    {"skill": "Deep Learning", "required_level": "intermediate", "weight": 3},
+    {"skill": "Experiment Design", "required_level": "beginner", "weight": 2}
+  ],
+  "dependencies": [
+    {"skill": "Machine Learning", "prerequisite": "Python"},
+    {"skill": "Machine Learning", "prerequisite": "Statistics"},
+    {"skill": "Deep Learning", "prerequisite": "Machine Learning"},
+    {"skill": "scikit-learn", "prerequisite": "Machine Learning"},
+    {"skill": "Pandas", "prerequisite": "Python"},
+    {"skill": "NumPy", "prerequisite": "Python"},
+    {"skill": "Data Visualization", "prerequisite": "Python"},
+    {"skill": "Experiment Design", "prerequisite": "Statistics"}
+  ]
+}

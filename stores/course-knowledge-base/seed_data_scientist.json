@@ -1,0 +1,126 @@
+{
+  "target_role": "Data Scientist",
+  "source_note": "Hand-built sample set — real, currently-existing course titles and providers, written from general knowledge (not scraped or fetched live). Fallback for the missing Coursera/Udemy MCP connectors, per user instruction. Treat as representative, not verbatim listings. estimated_hours is a rough hand estimate for path-fitting purposes, not a scraped/official figure. Added for the multi-role rework (see CLAUDE.md) alongside seed_ml_engineer.json and seed_frontend_developer.json.",
+  "courses": [
+    {
+      "id": "coursera-ibm-data-science-cert",
+      "title": "IBM Data Science Professional Certificate",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/professional-certificates/ibm-data-science",
+      "description": "A multi-course program covering Python, SQL, data analysis, data visualization, and machine learning, aimed at learners with no prior data science background.",
+      "skills_taught": ["Python", "SQL", "Pandas", "NumPy", "Data Visualization", "Machine Learning"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": [],
+      "estimated_hours": 120
+    },
+    {
+      "id": "coursera-google-data-analytics-cert",
+      "title": "Google Data Analytics Professional Certificate",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/professional-certificates/google-data-analytics",
+      "description": "Covers the full data analysis process: data cleaning, spreadsheets, SQL, and data visualization with Tableau, aimed at learners with no prior analytics background.",
+      "skills_taught": ["SQL", "Data Visualization", "Spreadsheets", "Data Cleaning"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": [],
+      "estimated_hours": 100
+    },
+    {
+      "id": "udemy-python-ds-ml-bootcamp",
+      "title": "Python for Data Science and Machine Learning Bootcamp",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/python-for-data-science-and-machine-learning-bootcamp/",
+      "description": "A hands-on introduction to the Python data science stack: NumPy, Pandas, Matplotlib, Seaborn, and scikit-learn, building toward practical machine learning projects.",
+      "skills_taught": ["Python", "Pandas", "NumPy", "Machine Learning", "Data Visualization"],
+      "level": "beginner",
+      "format": "video",
+      "prerequisites": ["Basic programming"],
+      "estimated_hours": 25
+    },
+    {
+      "id": "coursera-statistics-with-python",
+      "title": "Statistics with Python Specialization",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/specializations/statistics-with-python",
+      "description": "Covers inferential statistics, sampling, and statistical modeling in Python, aimed at learners who already know basic Python.",
+      "skills_taught": ["Statistics", "Python"],
+      "level": "intermediate",
+      "format": "self-paced",
+      "prerequisites": ["Python"],
+      "estimated_hours": 40
+    },
+    {
+      "id": "coursera-machine-learning-specialization",
+      "title": "Machine Learning Specialization",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/specializations/machine-learning-introduction",
+      "description": "Andrew Ng's foundational specialization covering supervised and unsupervised learning, regression, classification, and neural network basics with scikit-learn and TensorFlow.",
+      "skills_taught": ["Machine Learning", "scikit-learn", "Python"],
+      "level": "intermediate",
+      "format": "self-paced",
+      "prerequisites": ["Python", "Statistics"],
+      "estimated_hours": 60
+    },
+    {
+      "id": "coursera-deep-learning-specialization",
+      "title": "Deep Learning Specialization",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/specializations/deep-learning",
+      "description": "Covers neural networks, convolutional networks, sequence models, and how to structure machine learning projects, using Python and TensorFlow.",
+      "skills_taught": ["Deep Learning", "Python", "Machine Learning"],
+      "level": "advanced",
+      "format": "self-paced",
+      "prerequisites": ["Machine Learning"],
+      "estimated_hours": 80
+    },
+    {
+      "id": "coursera-sql-for-data-science",
+      "title": "SQL for Data Science",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/learn/sql-for-data-science",
+      "description": "An introduction to SQL for querying and filtering data, aimed at learners with no prior database experience.",
+      "skills_taught": ["SQL"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": [],
+      "estimated_hours": 20
+    },
+    {
+      "id": "udemy-ab-testing",
+      "title": "A/B Testing and Experiment Design for Data Analysts",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/ab-testing/",
+      "description": "Covers designing controlled experiments, sample size calculation, and interpreting statistical significance for product and marketing decisions.",
+      "skills_taught": ["Experiment Design", "Statistics"],
+      "level": "intermediate",
+      "format": "video",
+      "prerequisites": ["Statistics"],
+      "estimated_hours": 8
+    },
+    {
+      "id": "coursera-data-viz-python",
+      "title": "Data Visualization with Python",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/learn/python-for-data-visualization",
+      "description": "Covers building charts and dashboards in Python using Matplotlib, Seaborn, and Folium.",
+      "skills_taught": ["Data Visualization", "Python"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": ["Python"],
+      "estimated_hours": 15
+    },
+    {
+      "id": "coursera-data-science-math-skills",
+      "title": "Data Science Math Skills",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/learn/datasciencemathskills",
+      "description": "Covers the set theory, probability, and combinatorics foundations needed before tackling statistics and machine learning coursework.",
+      "skills_taught": ["Statistics"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": [],
+      "estimated_hours": 12
+    }
+  ]
+}

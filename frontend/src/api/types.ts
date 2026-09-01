@@ -126,3 +126,45 @@ export interface SystemStatus {
   taxonomy_store_backend: string
   llm_configured: boolean
 }
+
+export interface User {
+  id: string
+  email: string
+  display_name: string | null
+}
+
+export interface AuthResponse {
+  access_token: string
+  token_type: string
+  user: User
+}
+
+export interface Role {
+  role: string
+  blurb: string
+}
+
+export interface TreeCourseRef {
+  id: string
+  title: string
+  provider: string
+}
+
+export interface SkillTreeNode {
+  skill: string
+  required_level: string
+  weight: number
+  tier: number
+  prerequisites: string[]
+  courses: TreeCourseRef[]
+}
+
+export interface CourseTree {
+  target_role: string
+  skills: SkillTreeNode[]
+}
+
+export interface ChatMessagePayload {
+  role: 'user' | 'assistant'
+  text: string
+}
