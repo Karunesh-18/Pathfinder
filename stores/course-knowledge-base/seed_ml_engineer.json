@@ -1,0 +1,126 @@
+{
+  "target_role": "ML Engineer",
+  "source_note": "Hand-built sample set — real, currently-existing course titles and providers, written from general knowledge (not scraped or fetched live). Fallback for the missing Coursera/Udemy MCP connectors, per user instruction. Treat as representative, not verbatim listings. estimated_hours is a rough hand estimate for path-fitting purposes, not a scraped/official figure. Added for the multi-role rework (see CLAUDE.md) alongside seed_data_scientist.json and seed_frontend_developer.json. Course ids are suffixed with '-mle' where a similarly-named course also appears in another role's seed file, to keep every id unique across the whole knowledge base.",
+  "courses": [
+    {
+      "id": "coursera-mlops-specialization",
+      "title": "Machine Learning Engineering for Production (MLOps) Specialization",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops",
+      "description": "Covers designing, deploying, and monitoring production ML systems: data pipelines, model serving, and TensorFlow Extended (TFX).",
+      "skills_taught": ["MLOps", "Python", "Model Deployment", "TensorFlow"],
+      "level": "advanced",
+      "format": "self-paced",
+      "prerequisites": ["Machine Learning"],
+      "estimated_hours": 70
+    },
+    {
+      "id": "coursera-deep-learning-tensorflow",
+      "title": "DeepLearning.AI TensorFlow Developer Professional Certificate",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/professional-certificates/tensorflow-in-practice",
+      "description": "Hands-on TensorFlow training covering computer vision, natural language processing, and time series forecasting.",
+      "skills_taught": ["TensorFlow", "Deep Learning", "Python"],
+      "level": "intermediate",
+      "format": "self-paced",
+      "prerequisites": ["Python"],
+      "estimated_hours": 60
+    },
+    {
+      "id": "udemy-pytorch-for-deep-learning",
+      "title": "PyTorch for Deep Learning Bootcamp",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/pytorch-for-deep-learning/",
+      "description": "A hands-on introduction to building and training neural networks with PyTorch, from tensors through computer vision models.",
+      "skills_taught": ["PyTorch", "Deep Learning", "Python"],
+      "level": "intermediate",
+      "format": "video",
+      "prerequisites": ["Python"],
+      "estimated_hours": 50
+    },
+    {
+      "id": "udemy-docker-kubernetes-mle",
+      "title": "Docker and Kubernetes: The Complete Guide",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/",
+      "description": "Covers containerizing applications with Docker and orchestrating them with Kubernetes, including deployments, services, and scaling.",
+      "skills_taught": ["Docker", "Kubernetes"],
+      "level": "intermediate",
+      "format": "video",
+      "prerequisites": ["Command line basics"],
+      "estimated_hours": 20
+    },
+    {
+      "id": "coursera-machine-learning-specialization-mle",
+      "title": "Machine Learning Specialization",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/specializations/machine-learning-introduction",
+      "description": "Andrew Ng's foundational specialization covering supervised and unsupervised learning, regression, and classification with Python.",
+      "skills_taught": ["Machine Learning", "Python"],
+      "level": "intermediate",
+      "format": "self-paced",
+      "prerequisites": ["Python"],
+      "estimated_hours": 60
+    },
+    {
+      "id": "coursera-mlops-gcp",
+      "title": "MLOps (Machine Learning Operations) Fundamentals",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/learn/mlops-fundamentals",
+      "description": "Covers the fundamentals of operationalizing ML models on Google Cloud: pipelines, model registries, and continuous training.",
+      "skills_taught": ["MLOps", "Cloud Computing", "Model Deployment"],
+      "level": "intermediate",
+      "format": "self-paced",
+      "prerequisites": ["Machine Learning"],
+      "estimated_hours": 15
+    },
+    {
+      "id": "udemy-aws-machine-learning-specialty",
+      "title": "AWS Certified Machine Learning Specialty",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/aws-machine-learning/",
+      "description": "Exam-prep style course covering ML model building, tuning, and deployment on AWS SageMaker and related services.",
+      "skills_taught": ["Cloud Computing", "Machine Learning", "Model Deployment"],
+      "level": "advanced",
+      "format": "video",
+      "prerequisites": ["Machine Learning"],
+      "estimated_hours": 30
+    },
+    {
+      "id": "udemy-github-actions-cicd",
+      "title": "GitHub Actions - The Complete CI/CD Pipeline",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/github-actions/",
+      "description": "Covers building automated build, test, and deployment pipelines with GitHub Actions, including containerized deployments.",
+      "skills_taught": ["CI/CD", "Docker"],
+      "level": "beginner",
+      "format": "video",
+      "prerequisites": ["Command line basics"],
+      "estimated_hours": 10
+    },
+    {
+      "id": "coursera-python-for-everybody-mle",
+      "title": "Python for Everybody Specialization",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/specializations/python",
+      "description": "An introduction to Python programming, data structures, and databases, aimed at complete beginners.",
+      "skills_taught": ["Python"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": [],
+      "estimated_hours": 40
+    },
+    {
+      "id": "coursera-sql-for-data-science-mle",
+      "title": "SQL for Data Science",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/learn/sql-for-data-science",
+      "description": "An introduction to SQL for querying and filtering data, aimed at learners with no prior database experience.",
+      "skills_taught": ["SQL"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": [],
+      "estimated_hours": 20
+    }
+  ]
+}

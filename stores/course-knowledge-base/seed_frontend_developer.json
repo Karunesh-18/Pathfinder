@@ -1,0 +1,126 @@
+{
+  "target_role": "Frontend Developer",
+  "source_note": "Hand-built sample set — real, currently-existing course titles and providers, written from general knowledge (not scraped or fetched live). Fallback for the missing Coursera/Udemy MCP connectors, per user instruction. Treat as representative, not verbatim listings. estimated_hours is a rough hand estimate for path-fitting purposes, not a scraped/official figure. Added for the multi-role rework (see CLAUDE.md) alongside seed_data_scientist.json and seed_ml_engineer.json.",
+  "courses": [
+    {
+      "id": "coursera-meta-frontend-cert",
+      "title": "Meta Front-End Developer Professional Certificate",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/professional-certificates/meta-front-end-developer",
+      "description": "A multi-course program covering HTML, CSS, JavaScript, React, and version control with Git, aimed at learners with no prior web development background.",
+      "skills_taught": ["HTML", "CSS", "JavaScript", "React", "Git"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": [],
+      "estimated_hours": 120
+    },
+    {
+      "id": "udemy-web-dev-bootcamp",
+      "title": "The Complete Web Developer Bootcamp",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/the-complete-web-development-bootcamp/",
+      "description": "A broad introduction to web development covering HTML, CSS, and JavaScript fundamentals through hands-on projects.",
+      "skills_taught": ["HTML", "CSS", "JavaScript"],
+      "level": "beginner",
+      "format": "video",
+      "prerequisites": [],
+      "estimated_hours": 60
+    },
+    {
+      "id": "udemy-react-complete-guide",
+      "title": "React - The Complete Guide (incl. Hooks, React Router, Redux)",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/react-the-complete-guide-incl-redux/",
+      "description": "Covers building React applications from scratch: components, hooks, routing, and state management with Redux and the Context API.",
+      "skills_taught": ["React", "JavaScript", "State Management"],
+      "level": "intermediate",
+      "format": "video",
+      "prerequisites": ["JavaScript basics"],
+      "estimated_hours": 48
+    },
+    {
+      "id": "coursera-typescript-specialization",
+      "title": "Programming with TypeScript",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/learn/programming-with-typescript",
+      "description": "Covers TypeScript's type system, interfaces, and generics for learners already comfortable with JavaScript.",
+      "skills_taught": ["TypeScript", "JavaScript"],
+      "level": "intermediate",
+      "format": "self-paced",
+      "prerequisites": ["JavaScript basics"],
+      "estimated_hours": 20
+    },
+    {
+      "id": "udemy-responsive-web-design",
+      "title": "Responsive Web Design Masterclass",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/responsive-web-design-masterclass/",
+      "description": "Covers building layouts that adapt across screen sizes using CSS Flexbox, Grid, and media queries.",
+      "skills_taught": ["Responsive Design", "CSS", "HTML"],
+      "level": "beginner",
+      "format": "video",
+      "prerequisites": ["HTML basics", "CSS basics"],
+      "estimated_hours": 15
+    },
+    {
+      "id": "coursera-web-accessibility",
+      "title": "Introduction to Web Accessibility",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/learn/web-accessibility",
+      "description": "Covers WCAG guidelines, semantic HTML, ARIA attributes, and testing techniques for building accessible web pages.",
+      "skills_taught": ["Web Accessibility", "HTML"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": ["HTML basics"],
+      "estimated_hours": 10
+    },
+    {
+      "id": "udemy-nextjs-bootcamp",
+      "title": "Next.js & React - The Complete Guide",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/nextjs-react-the-complete-guide/",
+      "description": "Covers building server-rendered and statically-generated React applications with Next.js, including routing and API routes.",
+      "skills_taught": ["Next.js", "React"],
+      "level": "intermediate",
+      "format": "video",
+      "prerequisites": ["React"],
+      "estimated_hours": 25
+    },
+    {
+      "id": "udemy-git-github-bootcamp",
+      "title": "Git and GitHub Bootcamp",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/git-and-github-bootcamp/",
+      "description": "Covers version control fundamentals with Git and collaborative workflows on GitHub, including branching and pull requests.",
+      "skills_taught": ["Git"],
+      "level": "beginner",
+      "format": "video",
+      "prerequisites": [],
+      "estimated_hours": 8
+    },
+    {
+      "id": "udemy-frontend-testing-jest-rtl",
+      "title": "Testing React Applications with Jest and React Testing Library",
+      "provider": "Udemy",
+      "url": "https://www.udemy.com/course/react-testing-library/",
+      "description": "Covers writing unit and integration tests for React components using Jest and React Testing Library.",
+      "skills_taught": ["Testing (Frontend)", "React"],
+      "level": "intermediate",
+      "format": "video",
+      "prerequisites": ["React"],
+      "estimated_hours": 12
+    },
+    {
+      "id": "coursera-javascript-algorithms",
+      "title": "JavaScript Algorithms and Data Structures",
+      "provider": "Coursera",
+      "url": "https://www.coursera.org/learn/javascript-algorithms-data-structures",
+      "description": "Covers core algorithms and data structures implemented in JavaScript, building a foundation for technical interviews and cleaner code.",
+      "skills_taught": ["JavaScript"],
+      "level": "beginner",
+      "format": "self-paced",
+      "prerequisites": [],
+      "estimated_hours": 30
+    }
+  ]
+}

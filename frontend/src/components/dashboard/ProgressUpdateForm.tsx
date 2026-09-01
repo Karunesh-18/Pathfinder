@@ -4,13 +4,19 @@ import type { FormEvent } from 'react'
 import { useSubmitProgress } from '../../api/progressApi'
 import type { ReplanResult } from '../../api/types'
 import { errorMessage } from '../common/ErrorBanner'
-import { useLearnerSession } from '../../context/LearnerSessionContext'
+import { useAuth } from '../../context/AuthContext'
 
-export function ProgressUpdateForm({ onResult }: { onResult: (result: ReplanResult) => void }) {
-  const { learnerId } = useLearnerSession()
+export function ProgressUpdateForm({
+  onResult,
+  targetRole,
+}: {
+  onResult: (result: ReplanResult) => void
+  targetRole?: string
+}) {
+  const { learnerId } = useAuth()
   const [text, setText] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const submitProgress = useSubmitProgress(learnerId)
+  const submitProgress = useSubmitProgress(learnerId, targetRole)
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()

@@ -1,0 +1,28 @@
+{
+  "role": "Frontend Developer",
+  "source_note": "Hand-curated from general domain knowledge, not sourced from O*NET/ESCO or educor (see README) — a stand-in until a real taxonomy import happens. Skill names match the vocabulary already used in seed_frontend_developer.json so gap matching is exact-string, not fuzzy. Added for the multi-role rework alongside seed_data_scientist_taxonomy.json and seed_ml_engineer_taxonomy.json.",
+  "required_skills": [
+    {"skill": "HTML", "required_level": "advanced", "weight": 5},
+    {"skill": "CSS", "required_level": "advanced", "weight": 5},
+    {"skill": "JavaScript", "required_level": "advanced", "weight": 5},
+    {"skill": "React", "required_level": "advanced", "weight": 5},
+    {"skill": "TypeScript", "required_level": "intermediate", "weight": 3},
+    {"skill": "State Management", "required_level": "intermediate", "weight": 3},
+    {"skill": "Responsive Design", "required_level": "intermediate", "weight": 3},
+    {"skill": "Git", "required_level": "intermediate", "weight": 3},
+    {"skill": "Web Accessibility", "required_level": "beginner", "weight": 2},
+    {"skill": "Testing (Frontend)", "required_level": "beginner", "weight": 2},
+    {"skill": "Next.js", "required_level": "beginner", "weight": 2}
+  ],
+  "dependencies": [
+    {"skill": "CSS", "prerequisite": "HTML"},
+    {"skill": "JavaScript", "prerequisite": "HTML"},
+    {"skill": "React", "prerequisite": "JavaScript"},
+    {"skill": "TypeScript", "prerequisite": "JavaScript"},
+    {"skill": "State Management", "prerequisite": "React"},
+    {"skill": "Responsive Design", "prerequisite": "CSS"},
+    {"skill": "Next.js", "prerequisite": "React"},
+    {"skill": "Testing (Frontend)", "prerequisite": "React"},
+    {"skill": "Web Accessibility", "prerequisite": "HTML"}
+  ]
+}

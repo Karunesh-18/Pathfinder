@@ -2,8 +2,9 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 
 import { useAskQuestion } from '../../api/explainApi'
+import { useProfile } from '../../api/learnerApi'
 import { errorMessage } from '../../components/common/ErrorBanner'
-import { useLearnerSession } from '../../context/LearnerSessionContext'
+import { useAuth } from '../../context/AuthContext'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
 
 interface QaTurn {
@@ -12,13 +13,14 @@ interface QaTurn {
 }
 
 export function AssistantDrawer() {
-  const { learnerId } = useLearnerSession()
+  const { learnerId } = useAuth()
+  const { data: profile } = useProfile(learnerId)
   const [open, setOpen] = useState(false)
   const [question, setQuestion] = useState('')
   const [turns, setTurns] = useState<QaTurn[]>([])
   const [error, setError] = useState<string | null>(null)
   const isDesktop = useIsDesktop()
-  const askQuestion = useAskQuestion(learnerId)
+  const askQuestion = useAskQuestion(learnerId, profile?.target_role ?? undefined)
 
   if (!learnerId) return null
 

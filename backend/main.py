@@ -39,6 +39,9 @@ from fastapi import FastAPI, Request  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.responses import JSONResponse  # noqa: E402
 
+import auth_routes  # noqa: E402
+import chat_routes  # noqa: E402
+import courses_routes  # noqa: E402
 import dashboard_routes  # noqa: E402
 import explain_routes  # noqa: E402
 import learner_routes  # noqa: E402
@@ -65,11 +68,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_routes.router)
 app.include_router(learner_routes.router)
 app.include_router(path_routes.router)
 app.include_router(explain_routes.router)
 app.include_router(progress_routes.router)
 app.include_router(dashboard_routes.router)
+app.include_router(courses_routes.router)
+app.include_router(chat_routes.router)
 
 
 @app.exception_handler(Exception)

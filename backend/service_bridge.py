@@ -34,6 +34,8 @@ from typing import Any
 _ROOT = Path(__file__).resolve().parents[1]
 _PATHS = [
     _ROOT,
+    Path(__file__).resolve().parent,  # backend/ itself, for auth_token/chat_assistant
+    _ROOT / "stores" / "account-store",
     _ROOT / "stores" / "course-knowledge-base",
     _ROOT / "stores" / "learner-profile-store",
     _ROOT / "stores" / "path-store",
@@ -53,6 +55,7 @@ for _p in _PATHS:
 
 from common.llm import is_llm_configured  # noqa: E402
 
+import account_store as _account_store  # noqa: E402
 import db as _course_kb_db  # noqa: E402
 import profile_store as _profile_store  # noqa: E402
 import path_store as _path_store  # noqa: E402
@@ -66,6 +69,9 @@ from intake_agent import (  # noqa: E402
 from explain_agent import explain_path as _explain_path, ask as _ask  # noqa: E402
 from feedback_agent import apply_progress_event as _apply_progress_event  # noqa: E402
 from aggregate import build_dashboard as _build_dashboard  # noqa: E402
+
+import auth_token as _auth_token  # noqa: E402
+import chat_assistant as _chat_assistant  # noqa: E402
 
 # Single source of truth for the one role currently seeded — never
 # re-hardcode the string "Data Engineer" anywhere else in backend/.
@@ -140,3 +146,116 @@ def system_status() -> dict[str, Any]:
         "taxonomy_store_backend": _taxonomy_store.backend_name(),
         "llm_configured": is_llm_configured(),
     }
+
+
+# ---------------------------------------------------------------------------
+# Auth (new in the login/multi-role rework)
+# ---------------------------------------------------------------------------
+
+def _public_user(user: dict[str, Any]) -> dict[str, Any]:
+    return {"id": user["id"], "email": user["email"], "display_name": user.get("display_name")}
+
+
+def create_user(email: str, password: str, display_name: str | None) -> tuple[str, dict[str, Any]]:
+    """Returns (access_token, public_user_dict). Raises ValueError if the
+    email is already registered (caller maps this to a 409)."""
+    user = _account_store.create_user(email, password, display_name)
+    token = _auth_token.create_access_token(user["id"])
+    return token, _public_user(user)
+
+
+def authenticate_user(email: str, password: str) -> tuple[str, dict[str, Any]] | None:
+    """Returns (access_token, public_user_dict), or None on bad credentials."""
+    user = _account_store.get_user_by_email(email)
+    if user is None or not _account_store.verify_password(password, user["password_hash"]):
+        return None
+    token = _auth_token.create_access_token(user["id"])
+    return token, _public_user(user)
+
+
+def get_user(user_id: str) -> dict[str, Any] | None:
+    user = _account_store.get_user_by_id(user_id)
+    return _public_user(user) if user else None
+
+
+# ---------------------------------------------------------------------------
+# Profile update (Settings / Explore Roles pages)
+# ---------------------------------------------------------------------------
+
+def update_profile_fields(learner_id: str, updates: dict[str, Any]) -> dict[str, Any]:
+    """Partial-updates a learner profile. Raises ValueError if no profile
+    exists yet for this learner_id (caller maps this to a 404)."""
+    profile = get_profile(learner_id)
+    if profile is None:
+        raise ValueError(f"No profile found for learner_id={learner_id}")
+    for key, value in updates.items():
+        if value is not None:
+            profile[key] = value
+    _profile_store.save_profile(profile)
+    return get_profile(learner_id)
+
+
+# ---------------------------------------------------------------------------
+# Roles (Explore Roles page)
+# ---------------------------------------------------------------------------
+
+def list_roles() -> list[dict[str, Any]]:
+    return _taxonomy_store.list_roles()
+
+
+# ---------------------------------------------------------------------------
+# Course detail / tree
+# ---------------------------------------------------------------------------
+
+def get_course(course_id: str) -> dict[str, Any] | None:
+    return _course_kb_db.get_course(course_id)
+
+
+def get_course_tree(target_role: str) -> dict[str, Any]:
+    tiers = _taxonomy_store.compute_skill_tiers(target_role)
+    dependencies = _taxonomy_store.get_dependencies(target_role)
+    required_skills = _taxonomy_store.get_role_requirements(target_role)
+    prereqs_by_skill: dict[str, list[str]] = {}
+    for dep in dependencies:
+        prereqs_by_skill.setdefault(dep["skill"], []).append(dep["prerequisite"])
+
+    courses = list_courses(target_role)
+    courses_by_skill: dict[str, list[dict[str, Any]]] = {}
+    for course in courses:
+        for skill in course.get("skills_taught") or []:
+            courses_by_skill.setdefault(skill, []).append(
+                {"id": course["id"], "title": course["title"], "provider": course["provider"]}
+            )
+
+    skills = [
+        {
+            "skill": req["skill"],
+            "required_level": req["required_level"],
+            "weight": req["weight"],
+            "tier": tiers.get(req["skill"], 0),
+            "prerequisites": prereqs_by_skill.get(req["skill"], []),
+            "courses": courses_by_skill.get(req["skill"], []),
+        }
+        for req in required_skills
+    ]
+    return {"target_role": target_role, "skills": skills}
+
+
+# ---------------------------------------------------------------------------
+# Chatbot (general assistant)
+# ---------------------------------------------------------------------------
+
+def chat_reply(learner_id: str | None, message: str, history: list[dict[str, Any]]) -> str:
+    context: dict[str, Any] | None = None
+    if learner_id:
+        profile = get_profile(learner_id)
+        if profile is not None:
+            target_role = profile.get("target_role") or DEFAULT_TARGET_ROLE
+            remaining_titles = [s["title"] for s in get_path(learner_id)]
+            context = {
+                "target_role": target_role,
+                "current_skills": profile.get("current_skills", []),
+                "time_budget_hours_per_week": profile.get("time_budget_hours_per_week"),
+                "remaining_path_step_titles": remaining_titles,
+            }
+    return _chat_assistant.chat_reply(message, history, context)

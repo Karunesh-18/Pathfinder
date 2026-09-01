@@ -8,7 +8,9 @@ This file is the source of truth for AI coding tools (Claude Code, Copilot, Curs
 
 **Personalized Learning Path Recommender** — a multi-agent system that takes a learner's free-form goal, builds a structured profile, identifies skill gaps against a target role, constructs an ordered learning path from real course data, explains its reasoning, and adapts as the learner reports progress. Per `ARCHITECTURE.md`'s roster: 8 agents/services + 4 data stores.
 
-Target role scope right now: **Data Engineer only** (the one role seeded into the Course & Skills Knowledge Base and Skills Taxonomy Graph).
+Target role scope: **four roles seeded** into the Course & Skills Knowledge Base and Skills Taxonomy Graph — Data Engineer, Data Scientist, ML Engineer, Frontend Developer (added in the login/multi-role frontend rework; see `stores/course-knowledge-base/ingest.py`'s `ROLE_SEEDS` and `stores/skills-taxonomy-graph/taxonomy_store.py`'s `SEED_FILES` to add more). `services/intake-profiling/intake_agent.py`'s `DEFAULT_ROLE_FOR_TAXONOMY` ("Data Engineer") is now genuinely a fallback, not the only option — a learner's actual target role is set authoritatively via the frontend's Explore Roles / Settings pages (`PATCH /api/learners/{id}`), since free-text chat extraction only trusts an exact match against a seeded role name.
+
+A lightweight real-accounts auth layer and a React frontend (login/signup, chat-based onboarding, course browsing with filters, a course-detail page, a skill-tree visualization, a general-purpose chatbot, a roadmap/dashboard split, and role/settings management) sit in front of the pipeline — see `backend/` and `frontend/` below. There is still no Orchestrator Agent; `backend/service_bridge.py` is the closest thing to one, but it's a REST-API bridge, not the roster's agent.
 
 ## Status — build progress by phase
 
@@ -16,7 +18,7 @@ Per `ARCHITECTURE.md` Section 05's roadmap. All phases below are implemented and
 
 | Phase | What | Status |
 |---|---|---|
-| 00 · Foundations | Course & Skills Knowledge Base | ✅ Done — Supabase-backed, 12 hand-built sample courses (see Known Gaps) |
+| 00 · Foundations | Course & Skills Knowledge Base | ✅ Done — Supabase-backed, 42 hand-built sample courses across 4 roles (see Known Gaps) |
 | 01 · Intake | Intake & Profiling Agent | ✅ Done — real Groq LLM extraction, rule-based stub as fallback |
 | 02 · Recommendation core | Retrieval & Ranking Service | ✅ Done — TF-IDF cosine similarity, built fresh (no `v3.py` existed to adapt) |
 | 03 · Gap & path | Skill-Gap Agent + Path Construction | ✅ Done — deterministic gap scoring + DAG-ordered path with milestones |
@@ -60,11 +62,33 @@ services/                    # the 8 agents/services from the roster
   dashboard/                  #   aggregate.py, render.py, dashboard_schema.py
   <each has a>                #   test_harness.py — run directly with `python services/<name>/test_harness.py`
 
-stores/                      # the 4 data stores from the roster, all Supabase-backed w/ SQLite fallback
-  course-knowledge-base/      #   db.py, schema.sql, seed_data_engineer.json, providers/{coursera,udemy,hand_built}.py
+stores/                      # the 4 data stores from the roster, all Supabase-backed w/ SQLite fallback,
+                              #   plus a 5th (account-store) added for login — not part of ARCHITECTURE.md's roster
+  course-knowledge-base/      #   db.py, schema.sql, seed_<role>.json (x4), providers/{coursera,udemy,hand_built}.py
   learner-profile-store/      #   profile_store.py, schema.sql
-  skills-taxonomy-graph/      #   taxonomy_store.py, schema.sql, seed_data_engineer_taxonomy.json
+  skills-taxonomy-graph/      #   taxonomy_store.py, schema.sql, seed_<role>_taxonomy.json (x4)
   path-store/                 #   path_store.py, schema.sql
+  account-store/               #   account_store.py, schema.sql — users table (bcrypt password hash), keyed by uuid
+
+backend/                     # FastAPI REST layer wrapping the services/stores for the React frontend
+  main.py                     #   app entry, CORS, router registration — call chain: CLAUDE.md Convention #4
+  service_bridge.py           #   the ONLY file that imports services/ or stores/ — every route module goes through it
+  api_schemas.py               #   all request/response Pydantic models
+  auth_token.py, current_user.py, auth_routes.py  # JWT (PyJWT) issue/verify + signup/login/me
+  learner_routes.py, path_routes.py, explain_routes.py, progress_routes.py, dashboard_routes.py, courses_routes.py
+                              #   every {learner_id}-scoped route requires Depends(get_current_user_id) + a
+                              #   403 ownership check; /api/courses, /api/courses/{id}, /api/courses/tree,
+                              #   /api/roles, /api/system/status stay public (not learner-scoped)
+  chat_assistant.py, chat_routes.py  # general-purpose chatbot — Convention #3 shape, lives in backend/ not services/
+                              #   (not a pipeline stage, doesn't belong in the 8-agent roster)
+
+frontend/                    # React 19 + Vite + TS + Tailwind v4 + react-query + react-router v7
+  src/context/AuthContext.tsx  #   JWT in localStorage, GET /api/auth/me revalidation — see src/api/client.ts
+                              #   for the Authorization header attach + 401-redirect-to-/login logic
+  src/pages/                  #   Landing, Login, Signup, Onboarding, Roles, Courses (+ filters), CourseDetail,
+                              #   CourseTree (@xyflow/react — skill DAG, not a course DAG, see below), Chatbot,
+                              #   Roadmap (sequence + progress strip), Dashboard (skill analytics + reporting),
+                              #   Settings (edit profile)
 
 data/taxonomy/educor/        # pulled EduCOR ontology (CC0-1.0) — not yet wired into skills-taxonomy-graph
 reference/                   # 4 trimmed reference repos, pattern study only — see THIRD_PARTY_NOTICES.md
@@ -119,17 +143,19 @@ Hand-written strings with em dashes or `★` broke `print()` on this console ear
 Copy `.env.example` to `.env` at the project root (gitignored, never commit it, never paste its contents into chat):
 
 - `SUPABASE_DB_URL` — direct Postgres connection string (port 5432, not the 6543 pooler — DDL needs a direct session). Without it, every store falls back to local SQLite.
-- `GROQ_API_KEY` — without it, every reasoning agent falls back to its rule-based stub.
+- `GROQ_API_KEY` — without it, every reasoning agent (and `backend/chat_assistant.py`) falls back to its rule-based stub.
+- `JWT_SECRET` — signs login tokens (`backend/auth_token.py`). Without it, the backend falls back to a fixed, insecure development-only secret and prints a warning — fine for local dev, never for a real deployment.
+- `ALLOWED_ORIGINS` — comma-separated extra CORS origins for the deployed frontend (`backend/main.py` always allows `http://localhost:5173` regardless).
 
 ## Running Things
 
-Every service is a standalone script — there's no single entry point (no orchestrator yet):
+Each service is still independently runnable via its own `test_harness.py` (no orchestrator agent), but there is now a real entry point for actually using the app — `backend/` + `frontend/`:
 
 ```bash
 pip install -r requirements.txt
 
-python stores/course-knowledge-base/ingest.py          # seed the course KB (run first)
-python stores/skills-taxonomy-graph/taxonomy_store.py   # seed the taxonomy graph (run first)
+python stores/course-knowledge-base/ingest.py          # seed the course KB for all 4 roles (run first)
+python stores/skills-taxonomy-graph/taxonomy_store.py   # seed the taxonomy graph for all 4 roles (run first)
 
 python services/retrieval-ranking/test_harness.py
 python services/intake-profiling/test_harness.py
@@ -138,20 +164,25 @@ python services/path-construction/test_harness.py
 python services/explainability-qa/test_harness.py
 python services/progress-feedback/test_harness.py
 python services/dashboard/test_harness.py
+
+uvicorn backend.main:app --reload   # API on http://127.0.0.1:8000, docs at /docs
+cd frontend && npm install && npm run dev   # app on http://localhost:5173
 ```
 
-Each later harness re-runs the earlier pipeline stages internally (Intake → Skill-Gap → Path Construction → ...) using the same sample learner goal, so they're independently runnable — no fixture setup needed beyond the two seed scripts above.
+Each later test-harness re-runs the earlier pipeline stages internally (Intake → Skill-Gap → Path Construction → ...) using the same sample learner goal (always the Data Engineer role — the harnesses were never updated to exercise other roles), so they're independently runnable — no fixture setup needed beyond the two seed scripts above. The frontend/backend path is the multi-role-aware one; a harness run only ever proves the Data Engineer regression case still works.
 
 ## Known Gaps / Deliberate Assumptions
 
-- **Course data is a hand-built 12-course sample**, not real Coursera/Udemy data. No MCP connectors are configured for either platform. `stores/course-knowledge-base/providers/{coursera,udemy}.py` are ready-shaped adapters that currently raise `ProviderNotConfigured` and fall back to the hand-built rows — wiring a real connector means filling in `fetch()` in those two files; nothing else in the pipeline needs to change.
-- **Skills Taxonomy Graph is hand-curated**, not seeded from O*NET/ESCO (or `data/taxonomy/educor/`, which was pulled but never wired in — see `stores/skills-taxonomy-graph/README.md`).
-- **Target role is hardcoded to "Data Engineer"** in several places (`DEFAULT_ROLE_FOR_TAXONOMY` in `intake_agent.py`) — the system doesn't yet route a learner's own stated target role to a matching taxonomy/course-KB slice, because only one role is seeded.
+- **Course data is a hand-built sample** (42 courses across 4 roles), not real Coursera/Udemy data. No MCP connectors are configured for either platform. `stores/course-knowledge-base/providers/{coursera,udemy}.py` are ready-shaped adapters that currently raise `ProviderNotConfigured` and fall back to the hand-built rows (now one seed JSON per role, selected via `providers/hand_built.py`'s `SEED_FILES` map) — wiring a real connector means filling in `fetch()` in those two files; nothing else in the pipeline needs to change.
+- **Skills Taxonomy Graph is hand-curated**, not seeded from O*NET/ESCO (or `data/taxonomy/educor/`, which was pulled but never wired in — see `stores/skills-taxonomy-graph/README.md`). Same caveat now applies across all 4 seeded roles, not just Data Engineer.
+- **`course.prerequisites` is display-only free text, never consumed by pipeline logic** — it doesn't reliably match the taxonomy's exact-string skill vocabulary (e.g. a course lists `"ETL basics"` while the taxonomy's skill is `"ETL"`). The only structurally reliable dependency graph is the skill-level one in `skill_dependencies` (`taxonomy_store.get_dependencies`); the frontend's Course Tree page is built from that, not from `prerequisites`.
+- **Free-text target-role extraction is a deliberately weak link.** `intake_agent.py` normalizes an extracted `target_role` against `taxonomy_lookup.known_roles()` (case-insensitive exact match) and drops it to `missing_fields` on no match, rather than trusting a fuzzy guess like "data science professional" ≈ "Data Scientist". The frontend's Explore Roles page and Settings page (`PATCH /api/learners/{id}`) are the authoritative way a learner sets/corrects their target role.
+- **No auth hardening beyond the basics**: JWT has no refresh-token rotation, expires after 7 days with no renewal flow, and there's no email verification or password-reset flow — matches the user's explicit "lightweight real accounts" scope, not an oversight.
 - **`estimated_hours` per course is a rough hand estimate**, not scraped from a real source — used for path-fitting math, flagged as such in the seed data.
 - **`DEFAULT_WEEKLY_HOURS = 5.0`** (`path-construction/build_path.py`) is the fallback when a learner's time budget is unspecified.
 - **Replan threshold is `REPLAN_THRESHOLD_FRACTION = 0.05`** (`progress-feedback/feedback_agent.py`) — a concrete stand-in for the plan's qualitative "materially changed."
-- **No Orchestrator Agent** — see Status table above.
-- **No frontend** — `dashboard/render.py`'s `chart_render` is plain text, standing in for whatever a real chart library/frontend would consume the same `DashboardViewModel` to produce.
+- **No Orchestrator Agent** — see Status table above; `backend/service_bridge.py` is a REST-API bridge, not the roster's agent.
+- **A real frontend exists** (`frontend/`, React) as of the login/multi-role rework, but `services/dashboard/render.py`'s `chart_render` (plain-text rendering, used only by `dashboard`'s own `test_harness.py`) was left as-is — the frontend's `DashboardPage`/`SkillRadarChart` consume the same `DashboardViewModel` independently via `backend/dashboard_routes.py`, not through `render.py`.
 
 ## Things Not To Do
 
@@ -161,3 +192,4 @@ Each later harness re-runs the earlier pipeline stages internally (Intake → Sk
 - Don't print anything in a new entry-point script before calling `fix_windows_console_encoding()` — see Convention #5.
 - Don't edit `ARCHITECTURE.md` — it's the original plan, kept as-is on purpose. Document deviations here instead.
 - Don't paste `.env` contents (Supabase connection string, Groq API key) into chat — edit the file directly.
+- Don't call `course_kb_db.list_courses()` without filtering by `target_role` when the result feeds course *selection* (as opposed to a lookup by already-known id). With 4 roles now sharing one `courses` table, an unfiltered list lets a same-named skill (e.g. "Python") pull in a course tagged for a different role entirely — this was a real regression caught during the multi-role rework's regression testing, fixed in both `services/path-construction/build_path.py` (candidate course selection) and `services/progress-feedback/feedback_agent.py` (progress-text course-completion matching, since some course titles are intentionally reused across role seed files with different ids).

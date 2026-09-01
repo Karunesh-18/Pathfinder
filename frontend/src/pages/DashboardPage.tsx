@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
+import { ApiError } from '../api/client'
 import { useDashboard } from '../api/dashboardApi'
+import { useProfile } from '../api/learnerApi'
 import type { ReplanResult } from '../api/types'
 import { ErrorBanner, errorMessage } from '../components/common/ErrorBanner'
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton'
@@ -11,14 +13,34 @@ import { ProgressUpdateForm } from '../components/dashboard/ProgressUpdateForm'
 import { ReplanResultBanner } from '../components/dashboard/ReplanResultBanner'
 import { SkillRadarChart } from '../components/dashboard/SkillRadarChart'
 import { SummaryStatTiles } from '../components/dashboard/SummaryStatTiles'
-import { useLearnerSession } from '../context/LearnerSessionContext'
+import { useAuth } from '../context/AuthContext'
 
 export function DashboardPage() {
-  const { learnerId } = useLearnerSession()
-  const dashboardQuery = useDashboard(learnerId)
+  const { learnerId } = useAuth()
+  const profileQuery = useProfile(learnerId)
+  const targetRole = profileQuery.data?.target_role ?? undefined
+  const dashboardQuery = useDashboard(learnerId, targetRole)
   const [replanResult, setReplanResult] = useState<ReplanResult | null>(null)
 
-  if (!learnerId) return <Navigate to="/onboarding" replace />
+  const noProfileYet =
+    profileQuery.isError && profileQuery.error instanceof ApiError && profileQuery.error.status === 404
+
+  if (noProfileYet) {
+    return (
+      <div className="mx-auto max-w-lg py-10 text-center">
+        <h1 className="mb-2 text-xl font-semibold">Let's get you set up</h1>
+        <p className="mb-5 text-sm text-fg-muted">
+          You haven't described your learning goal yet — onboarding only takes a minute.
+        </p>
+        <Link
+          to="/onboarding"
+          className="inline-block rounded-full bg-coral px-6 py-3 text-sm font-semibold text-white transition hover:bg-coral-dark"
+        >
+          Start onboarding
+        </Link>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -43,7 +65,7 @@ export function DashboardPage() {
 
             <div className="space-y-6">
               <NextActionCallout action={dashboardQuery.data.next_action} />
-              <ProgressUpdateForm onResult={setReplanResult} />
+              <ProgressUpdateForm onResult={setReplanResult} targetRole={targetRole} />
             </div>
           </div>
 

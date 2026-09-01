@@ -1,0 +1,30 @@
+{
+  "role": "ML Engineer",
+  "source_note": "Hand-curated from general domain knowledge, not sourced from O*NET/ESCO or educor (see README) — a stand-in until a real taxonomy import happens. Skill names match the vocabulary already used in seed_ml_engineer.json so gap matching is exact-string, not fuzzy. Added for the multi-role rework alongside seed_data_scientist_taxonomy.json and seed_frontend_developer_taxonomy.json.",
+  "required_skills": [
+    {"skill": "Python", "required_level": "advanced", "weight": 5},
+    {"skill": "Machine Learning", "required_level": "advanced", "weight": 5},
+    {"skill": "MLOps", "required_level": "advanced", "weight": 5},
+    {"skill": "Deep Learning", "required_level": "intermediate", "weight": 4},
+    {"skill": "Model Deployment", "required_level": "intermediate", "weight": 4},
+    {"skill": "TensorFlow", "required_level": "intermediate", "weight": 3},
+    {"skill": "PyTorch", "required_level": "intermediate", "weight": 3},
+    {"skill": "Docker", "required_level": "intermediate", "weight": 3},
+    {"skill": "Kubernetes", "required_level": "intermediate", "weight": 3},
+    {"skill": "Cloud Computing", "required_level": "intermediate", "weight": 3},
+    {"skill": "CI/CD", "required_level": "beginner", "weight": 2},
+    {"skill": "SQL", "required_level": "beginner", "weight": 2}
+  ],
+  "dependencies": [
+    {"skill": "Machine Learning", "prerequisite": "Python"},
+    {"skill": "Deep Learning", "prerequisite": "Machine Learning"},
+    {"skill": "TensorFlow", "prerequisite": "Deep Learning"},
+    {"skill": "PyTorch", "prerequisite": "Deep Learning"},
+    {"skill": "MLOps", "prerequisite": "Machine Learning"},
+    {"skill": "MLOps", "prerequisite": "Docker"},
+    {"skill": "Model Deployment", "prerequisite": "MLOps"},
+    {"skill": "Kubernetes", "prerequisite": "Docker"},
+    {"skill": "CI/CD", "prerequisite": "Docker"},
+    {"skill": "Cloud Computing", "prerequisite": "Python"}
+  ]
+}

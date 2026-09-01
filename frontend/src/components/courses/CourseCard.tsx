@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import type { Course } from '../../api/types'
 import { Badge } from '../common/Badge'
 
@@ -5,7 +7,9 @@ export function CourseCard({ course }: { course: Course }) {
   return (
     <div className="flex h-full flex-col rounded-xl border border-border bg-bg-raised p-4">
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-sm font-semibold">{course.title}</h3>
+        <Link to={`/courses/${course.id}`} className="text-sm font-semibold hover:underline">
+          {course.title}
+        </Link>
         {course.level && <Badge tone="neutral">{course.level}</Badge>}
       </div>
       <p className="mt-0.5 text-xs text-fg-muted">

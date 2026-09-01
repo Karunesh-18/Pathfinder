@@ -78,7 +78,14 @@ def apply_progress_event(learner_id: str, target_role: str, raw_text: str) -> Re
     if profile is None:
         raise ValueError(f"No profile found for learner_id={learner_id}")
 
-    courses = course_kb_db.list_courses()
+    # Filter to this role's courses: a progress report should only ever
+    # match a course from the learner's own target-role plan. Left
+    # unfiltered, a title shared across roles (e.g. "SQL for Data
+    # Science" exists for both Data Scientist and ML Engineer) could
+    # resolve to the wrong role's course id — same class of bug fixed in
+    # services/path-construction/build_path.py during the multi-role
+    # rework's regression testing.
+    courses = [c for c in course_kb_db.list_courses() if target_role in (c.get("target_roles") or [])]
     known_skills = sorted({s for c in courses for s in (c.get("skills_taught") or [])})
     interpreted = interpret_progress_event(raw_text, known_skills, courses)
 

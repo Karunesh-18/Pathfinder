@@ -164,9 +164,14 @@ CREATE TABLE IF NOT EXISTS courses (
 
 
 def upsert_courses_sqlite(courses: list[dict[str, Any]], target_role: str) -> int:
+    # NOTE: this used to DROP TABLE IF EXISTS before every ingest, which was
+    # harmless for a single seeded role but silently wiped every other
+    # role's rows once multi-role seeding started (ingest.py loops
+    # ROLE_SEEDS calling this once per role). Switched to
+    # CREATE TABLE IF NOT EXISTS + INSERT ... ON CONFLICT, mirroring
+    # upsert_courses_postgres's already-correct ON CONFLICT logic.
     conn = sqlite3.connect(SQLITE_PATH)
     try:
-        conn.execute("DROP TABLE IF EXISTS courses")
         conn.execute(SQLITE_SCHEMA)
         conn.executemany(
             """
@@ -174,6 +179,18 @@ def upsert_courses_sqlite(courses: list[dict[str, Any]], target_role: str) -> in
                 (id, title, provider, url, description, skills_taught,
                  level, format, target_roles, prerequisites, estimated_hours, source)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                title=excluded.title,
+                provider=excluded.provider,
+                url=excluded.url,
+                description=excluded.description,
+                skills_taught=excluded.skills_taught,
+                level=excluded.level,
+                format=excluded.format,
+                target_roles=excluded.target_roles,
+                prerequisites=excluded.prerequisites,
+                estimated_hours=excluded.estimated_hours,
+                source=excluded.source
             """,
             [
                 (
@@ -244,3 +261,10 @@ def list_courses() -> list[dict[str, Any]]:
     if db_url:
         return list_courses_postgres(db_url)
     return list_courses_sqlite()
+
+
+def get_course(course_id: str) -> dict[str, Any] | None:
+    """Simplest correct implementation at this dataset's size (tens of
+    rows, not thousands): reuse list_courses() rather than writing a
+    second SQL query path per backend."""
+    return next((c for c in list_courses() if c["id"] == course_id), None)

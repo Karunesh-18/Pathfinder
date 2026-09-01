@@ -7,6 +7,7 @@ venv/
 # regenerable prototype output — recreate with:
 #   python stores/course-knowledge-base/ingest.py
 #   python services/intake-profiling/test_harness.py
+stores/account-store/accounts.db
 stores/course-knowledge-base/course_kb.db
 stores/learner-profile-store/learner_profiles.db
 stores/path-store/path_store.db

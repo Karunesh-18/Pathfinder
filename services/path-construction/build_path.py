@@ -93,7 +93,13 @@ def build_path(
     target_role: str,
     time_budget_hours_per_week: float | None,
 ) -> list[LearningPathStep]:
-    courses = course_kb_db.list_courses()
+    # Filter to this role's courses before candidate selection. Harmless
+    # to skip when only one role was ever seeded (every course WAS that
+    # role), but with multiple roles sharing one courses table, an
+    # unfiltered list lets a same-named skill (e.g. "Python") pull in a
+    # course tagged for a different role entirely — a real regression
+    # caught during the multi-role rework's regression testing.
+    courses = [c for c in course_kb_db.list_courses() if target_role in (c.get("target_roles") or [])]
     selected = _select_candidate_courses(gaps, courses)
     if not selected:
         return []

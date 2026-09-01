@@ -44,7 +44,40 @@ class ProfileOut(BaseModel):
 
 class CreateLearnerRequest(BaseModel):
     raw_text: str
-    learner_id: str | None = None
+
+
+class UpdateProfileRequest(BaseModel):
+    target_role: str | None = None
+    current_skills: list[SkillEntryOut] | None = None
+    time_budget_hours_per_week: float | None = None
+    format_preference: str | None = None
+
+
+# ---------------------------------------------------------------------------
+# Auth
+# ---------------------------------------------------------------------------
+
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+    display_name: str | None = None
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class UserOut(BaseModel):
+    id: str
+    email: str
+    display_name: str | None = None
+
+
+class AuthOut(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserOut
 
 
 # ---------------------------------------------------------------------------
@@ -198,6 +231,61 @@ class CourseOut(BaseModel):
 
 class CoursesOut(BaseModel):
     courses: list[CourseOut]
+
+
+# ---------------------------------------------------------------------------
+# Roles
+# ---------------------------------------------------------------------------
+
+class RoleOut(BaseModel):
+    role: str
+    blurb: str = ""
+
+
+class RolesOut(BaseModel):
+    roles: list[RoleOut]
+
+
+# ---------------------------------------------------------------------------
+# Course tree
+# ---------------------------------------------------------------------------
+
+class TreeCourseRefOut(BaseModel):
+    id: str
+    title: str
+    provider: str
+
+
+class SkillTreeNodeOut(BaseModel):
+    skill: str
+    required_level: str
+    weight: float
+    tier: int
+    prerequisites: list[str] = Field(default_factory=list)
+    courses: list[TreeCourseRefOut] = Field(default_factory=list)
+
+
+class CourseTreeOut(BaseModel):
+    target_role: str
+    skills: list[SkillTreeNodeOut]
+
+
+# ---------------------------------------------------------------------------
+# Chatbot (general assistant)
+# ---------------------------------------------------------------------------
+
+class ChatMessageIn(BaseModel):
+    role: str  # "user" | "assistant"
+    text: str
+
+
+class ChatRequest(BaseModel):
+    message: str
+    history: list[ChatMessageIn] = Field(default_factory=list)
+
+
+class ChatOut(BaseModel):
+    reply: str
 
 
 # ---------------------------------------------------------------------------
